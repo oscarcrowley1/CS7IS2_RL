@@ -43,6 +43,7 @@ class QLearningAgent(ReinforcementAgent):
         ReinforcementAgent.__init__(self, **args)
 
         "*** YOUR CODE HERE ***"
+        # use couter to store our values for our states
         self.values = util.Counter()
 
     def getQValue(self, state, action):
@@ -56,7 +57,6 @@ class QLearningAgent(ReinforcementAgent):
           return 0.0
         else:
           return self.values[(state, action)]
-        # util.raiseNotDefined()
 
 
     def computeValueFromQValues(self, state):
@@ -71,14 +71,14 @@ class QLearningAgent(ReinforcementAgent):
         
         for action in self.getLegalActions(state):
           qValues.append(self.getQValue(state, action))
+          
+        # if there are legal actions return highest q-value
         
         if len(qValues) == 0:
           return 0.0
         else:
           return max(qValues)
         
-        #util.raiseNotDefined()
-
     def computeActionFromQValues(self, state):
         """
           Compute the best action to take in a state.  Note that if there
@@ -90,13 +90,15 @@ class QLearningAgent(ReinforcementAgent):
         
         for action in self.getLegalActions(state):
           qValues[action] = self.getQValue(state, action)
+          # create a dictionary of acitons and their q-values
         
         if len(qValues) == 0:
           return None
         else:
           max_qActions = [action for action, qValue in qValues.items() if qValue == max(qValues.values())]
+          # make list of acitons with the largest q-values
+          # if more than 1 have max then choose random
           return random.choice(max_qActions)
-        #util.raiseNotDefined()
 
     def getAction(self, state):
         """
@@ -116,8 +118,10 @@ class QLearningAgent(ReinforcementAgent):
         
         if not len(legalActions) == 0:
           if util.flipCoin(self.epsilon):
+            # if true choose random legal action
             action = random.choice(legalActions)
           else:
+            # if false use aciton with highest q value
             action = self.computeActionFromQValues(state)
 
         return action
@@ -134,6 +138,7 @@ class QLearningAgent(ReinforcementAgent):
         "*** YOUR CODE HERE ***"
         weighted_current = (1-self.alpha) * self.getQValue(state, action)
         weighted_next = self.alpha * (reward + self.discount * self.computeValueFromQValues(nextState))
+        # update value with weighted immediate reward and immediate future reward
         self.values[(state, action)] = weighted_current + weighted_next
         # util.raiseNotDefined()
 
